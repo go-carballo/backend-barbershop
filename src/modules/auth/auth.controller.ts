@@ -16,6 +16,7 @@ import { JwtAuthGuard } from './jwt.auth-guard';
 
 import { Roles } from '../../common/decorators/roles.decorator';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { UserRole } from '../users/enums/user-role.enum';
 
 interface AuthenticatedRequest {
   user: {
@@ -50,7 +51,7 @@ export class AuthController {
 
   @Get('profile')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(UserRole.ADMIN, UserRole.BARBER, UserRole.RECEPTIONIST)
   @ApiBearerAuth()
   profile(@Req() request: AuthenticatedRequest) {
     return request.user;
