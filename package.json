@@ -24,7 +24,8 @@
     "migration:revert": "npm run typeorm -- -d src/database/data-source.ts migration:revert",
     "migration:show": "npm run typeorm -- -d src/database/data-source.ts migration:show",
     "migration:run:prod": "typeorm -d dist/database/data-source.js migration:run",
-    "seed:admin": "node -r dotenv/config -r ts-node/register -r tsconfig-paths/register src/database/seeds/admin.seed.ts"
+    "seed:admin": "node -r dotenv/config -r ts-node/register -r tsconfig-paths/register src/database/seeds/admin.seed.ts",
+    "seed:admin:prod": "node -r dotenv/config dist/database/seeds/admin.seed.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

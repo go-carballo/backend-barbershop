@@ -1,14 +1,20 @@
+
 import 'reflect-metadata';
 import * as bcrypt from 'bcrypt';
 
 import dataSource from '../data-source';
 
 async function seedAdmin(): Promise<void> {
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!email || !password || password.length < 12) {
+    throw new Error('Invalid ADMIN_EMAIL or ADMIN_PASSWORD');
+  }
+
   await dataSource.initialize();
 
   try {
-    const email = 'admin@barbershop.com';
-
     const existingUsers = await dataSource.query<Array<{ id: string }>>(
       'SELECT id FROM users WHERE email = $1',
       [email],
@@ -19,7 +25,7 @@ async function seedAdmin(): Promise<void> {
       return;
     }
 
-    const passwordHash = await bcrypt.hash('Admin123!', 10);
+    const passwordHash = await bcrypt.hash(password, 10);
 
     await dataSource.query(
       `
