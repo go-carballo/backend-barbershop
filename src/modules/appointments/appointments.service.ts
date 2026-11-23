@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  Logger,
+  OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,9 +14,16 @@ import { Service } from '../services/entities/service.entity';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { ListAppointmentsQueryDto } from './dto/list-appointments.query.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  EVENT_APPOINTMENT_CREATED,
+  EVENT_APPOINTMENT_STATUS_CHANGED,
+} from '../notifications/listeners/notification.event.listener';
 
 @Injectable()
-export class AppointmentsService {
+export class AppointmentsService implements OnModuleInit {
+  private readonly logger = new Logger(AppointmentsService.name);
+
   constructor(
     @InjectRepository(Appointment)
     private readonly appointmentsRepository: Repository<Appointment>,
@@ -24,7 +33,12 @@ export class AppointmentsService {
     private readonly barbersRepository: Repository<Barber>,
     @InjectRepository(Service)
     private readonly servicesRepository: Repository<Service>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
+
+  async onModuleInit() {
+    this.logger.log('AppointmentsService initialized with event emitter');
+  }
 
   async findOne(id: string): Promise<Appointment> {
     const appointment = await this.appointmentsRepository.findOne({
@@ -39,6 +53,7 @@ export class AppointmentsService {
 
   async update(id: string, dto: UpdateAppointmentDto): Promise<Appointment> {
     const appointment = await this.findOne(id);
+    const oldStatus = appointment.status;
 
     if (dto.customerId !== undefined) {
       await this.validateCustomer(dto.customerId);
@@ -89,7 +104,27 @@ export class AppointmentsService {
       );
     }
 
-    return this.appointmentsRepository.save(appointment);
+    const saved = await this.appointmentsRepository.save(appointment);
+
+    // Emit status change event
+    if (dto.status && dto.status !== oldStatus) {
+      const full = await this.findOne(id);
+      const service = await this.servicesRepository.findOne({ where: { id: full.serviceId } });
+      void this.eventEmitter.emit(EVENT_APPOINTMENT_STATUS_CHANGED, {
+        appointmentId: full.id,
+        customerId: full.customerId,
+        barberId: full.barberId,
+        serviceId: full.serviceId,
+        appointmentDate: full.appointmentDate,
+        startTime: full.startTime,
+        endTime: full.endTime,
+        fromStatus: oldStatus,
+        toStatus: dto.status,
+        serviceName: service?.name,
+      });
+    }
+
+    return saved;
   }
 
   async remove(id: string): Promise<void> {
@@ -181,7 +216,22 @@ export class AppointmentsService {
       notes: dto.notes ?? null,
     });
 
-    return this.appointmentsRepository.save(appointment);
+    const saved = await this.appointmentsRepository.save(appointment);
+
+    // Emit appointment created event
+    void this.eventEmitter.emit(EVENT_APPOINTMENT_CREATED, {
+      appointmentId: saved.id,
+      customerId: saved.customerId,
+      barberId: saved.barberId,
+      serviceId: saved.serviceId,
+      appointmentDate: saved.appointmentDate,
+      startTime: saved.startTime,
+      endTime: saved.endTime,
+      status: saved.status,
+      notes: saved.notes,
+    });
+
+    return saved;
   }
 
   private async validateCustomer(id: string): Promise<void> {
