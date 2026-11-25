@@ -11,7 +11,7 @@ export class Service {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 150 })
+  @Column({ type: 'varchar', length: 150 })
   name: string;
 
   @Column({ type: 'varchar', length: 500, nullable: true })
@@ -31,7 +31,7 @@ export class Service {
   })
   price: number;
 
-  @Column({ name: 'is_active', default: true })
+  @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
 
   @CreateDateColumn({ name: 'created_at' })

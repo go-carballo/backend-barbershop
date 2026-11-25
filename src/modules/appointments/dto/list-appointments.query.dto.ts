@@ -76,4 +76,20 @@ export class ListAppointmentsQueryDto {
   @IsOptional()
   @IsIn(['scheduled', 'confirmed', 'completed', 'cancelled'])
   status?: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
+
+  @ApiPropertyOptional({
+    example: '2026-01-01',
+    description: 'Filter appointments on or after this date (YYYY-MM-DD)',
+  })
+  @IsOptional()
+  @IsDateString()
+  fromDate?: string;
+
+  @ApiPropertyOptional({
+    example: '2026-12-31',
+    description: 'Filter appointments on or before this date (YYYY-MM-DD)',
+  })
+  @IsOptional()
+  @IsDateString()
+  toDate?: string;
 }

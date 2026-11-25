@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 
 import { AppointmentsService } from './appointments.service';
@@ -37,6 +38,10 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { ListAppointmentsResponseDto } from './dto/list-appointments-response.dto';
 import { UserRole } from '../users/enums/user-role.enum';
+
+interface AuthenticatedRequest {
+  user: { id: string; email: string; role: string };
+}
 
 @ApiTags('appointments')
 @ApiBearerAuth()
@@ -122,5 +127,21 @@ export class AppointmentsController {
   @ApiBadRequestResponse({ description: 'Invalid UUID format' })
   remove(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.appointmentsService.remove(id);
+  }
+
+  @Get('dashboard/stats')
+  @Roles(UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.BARBER)
+  @ApiOperation({ summary: 'Get dashboard statistics' })
+  @ApiOkResponse({
+    description: 'Dashboard statistics',
+  })
+  getDashboardStats(@Req() request: AuthenticatedRequest) {
+    // Barber sees only their own stats
+    const role = request.user.role;
+    if (role === 'barber') {
+      return this.appointmentsService.getDashboardStats(request.user.id);
+    }
+    // Admin/receptionist see all
+    return this.appointmentsService.getDashboardStats();
   }
 }

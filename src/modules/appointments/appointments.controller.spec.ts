@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppointmentsController } from './appointments.controller';
 
