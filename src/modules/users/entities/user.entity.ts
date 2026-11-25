@@ -12,20 +12,25 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ length: 150 })
+  @Column({ type: 'varchar', length: 150 })
   name!: string;
 
-  @Column({ length: 150, unique: true })
+  @Column({ type: 'varchar', length: 150, unique: true })
   email!: string;
 
-  @Column({ length: 255, select: false })
+  @Column({ type: 'varchar', length: 255, select: false })
   password!: string;
 
-  @Column({ length: 50 })
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
   role!: UserRole;
 
-  @Column({ name: 'is_active', default: true })
+  @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive!: boolean;
+
+
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

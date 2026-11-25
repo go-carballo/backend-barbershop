@@ -11,7 +11,7 @@ export class Customer {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 150 })
+  @Column({ type: 'varchar', length: 150 })
   name: string;
 
   @Column({ type: 'varchar', length: 150, unique: true, nullable: true })
@@ -20,7 +20,7 @@ export class Customer {
   @Column({ type: 'varchar', length: 30, nullable: true })
   phone: string | null;
 
-  @Column({ name: 'is_active', default: true })
+  @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
 
   @CreateDateColumn({ name: 'created_at' })

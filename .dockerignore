@@ -1,0 +1,26 @@
+# Dependency cache
+node_modules
+npm-debug.log*
+
+# Build output
+dist
+nest-cli.cache
+
+# Dev
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Misc
+.DS_Store
+*.md

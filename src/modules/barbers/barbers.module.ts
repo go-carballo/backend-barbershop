@@ -7,6 +7,7 @@ import { Barber } from './entities/barber.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Barber])],
   controllers: [BarbersController],
-  providers: [BarbersService]
+  providers: [BarbersService],
+  exports: [BarbersService],
 })
 export class BarbersModule {}

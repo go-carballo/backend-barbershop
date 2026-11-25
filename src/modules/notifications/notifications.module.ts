@@ -7,8 +7,6 @@ import { EmailModule } from '../email/email.module';
 import { BarbersModule } from '../barbers/barbers.module';
 import { CustomersModule } from '../customers/customers.module';
 import { NotificationEventListener } from './listeners/notification.event.listener';
-import { BarbersService } from '../barbers/barbers.service';
-import { CustomersService } from '../customers/customers.service';
 
 @Module({
   imports: [
@@ -20,8 +18,6 @@ import { CustomersService } from '../customers/customers.service';
   providers: [
     NotificationsService,
     NotificationEventListener,
-    BarbersService,
-    CustomersService,
   ],
   controllers: [NotificationsController],
   exports: [NotificationsService],

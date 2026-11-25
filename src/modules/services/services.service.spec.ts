@@ -1,12 +1,18 @@
+import "reflect-metadata";
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { ServicesService } from './services.service';
+import { Service } from './entities/service.entity';
 
 describe('ServicesService', () => {
   let service: ServicesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ServicesService],
+      providers: [
+        ServicesService,
+        { provide: getRepositoryToken(Service), useValue: {} },
+      ],
     }).compile();
 
     service = module.get<ServicesService>(ServicesService);

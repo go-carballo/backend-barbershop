@@ -11,7 +11,7 @@ export class Barber {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 150 })
+  @Column({ type: 'varchar', length: 150 })
   name: string;
 
   @Column({ type: 'varchar', length: 150, unique: true, nullable: true })
@@ -23,7 +23,7 @@ export class Barber {
   @Column({ type: 'varchar', length: 80, nullable: true })
   specialty: string | null;
 
-  @Column({ name: 'is_active', default: true })
+  @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
